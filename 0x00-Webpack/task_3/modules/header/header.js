@@ -1,13 +1,7 @@
-import $ from 'jquery';
+import "./header.css";
+const $ = require("jquery");
 
-console.log('Init header');
+$("body").append("<header></header>");
+$("header").append('<div id="logo"></div>', "<h1>Holberton Dashboard</h1>");
 
-const header = $('header');
-
-const logo = $('<img>')
-  .attr('src', 'https://www.holbertonschool.com/holberton-logo.png')
-  .appendTo(header);
-
-const h1 = $('<h1>')
-  .text('Holberton Dashboard')
-  .appendTo(header);
+console.log("Init header");
