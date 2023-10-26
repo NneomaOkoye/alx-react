@@ -5,10 +5,9 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   server: {
 https: {
-  key: './alx project-privateKey.key',
-  cert: './alx project.crt',
+  key: '/alx project-privateKey.key',
+  cert: '/alx project.crt',
 }
-
   }
   plugins: [react()],
 })
