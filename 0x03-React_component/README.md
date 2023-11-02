@@ -1,4 +1,4 @@
-0x02. React props
+0x03. React component
 Front-end
 JavaScript
 ES6
