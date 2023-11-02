@@ -1,5 +1,6 @@
 import { shallow } from 'enzyme';
 import Notifications from './Notifications';
+import NotificationItem from './NotificationItem';
 
 describe('Notifications', () => {
   it('renders without crashing', () => {
@@ -11,7 +12,7 @@ describe('Notifications', () => {
 describe('Notifications list', () => {
   it('renders three list items', () => {
     const wrapper = shallow(<Notifications />);
-    expect(wrapper.find('li')).toHaveLength(3);
+    expect(wrapper.find(NotificationItem)).toHaveLength(3);
   });
 });
 
