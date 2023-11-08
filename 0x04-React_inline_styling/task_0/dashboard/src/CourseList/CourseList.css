@@ -1,11 +1,25 @@
-#CourseList {
-  border: 1px solid grey;
+table {
+  margin-top: 2em;
   width: 100%;
-  padding: 0;
+  border: 1px solid #ddd;
+  font-size: 1.2rem;
+  margin-bottom: 15em;
 }
 
-thead th {
-  text-align: center;
-  border-top: 1px solid grey;
-  border-bottom: 1px solid grey
+th {
+  border-bottom: 1px solid #ddd;
+}
+
+th,
+td {
+  width: 80%;
+}
+
+table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+tr:nth-child(2) {
+  text-align: left;
 }
