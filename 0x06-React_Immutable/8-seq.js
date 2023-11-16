@@ -1,18 +1,19 @@
-import { Seq } from 'immutable';
+import { Seq, fromJS } from 'immutable';
 
-export default function printBestStudents(obj) {
-  const lazySeq = Seq(obj)
-    .filter((item) => item.score >= 70)
-    .map((student) => {
-      return {
-        ...student,
-        firstName:
-          student.firstName.charAt(0).toUpperCase() +
-          student.firstName.slice(1),
-        lastName:
-          student.lastName.charAt(0).toUpperCase() + student.lastName.slice(1),
-      };
-    });
+// Function to print best students
+export function printBestStudents(grades) {
+  // Convert the plain object to an Immutable Map
+  const immutableGrades = fromJS(grades);
 
-  console.log(lazySeq.toJS());
+  // Filter students with score >= 70 using Seq
+  const bestStudents = Seq(immutableGrades).filter(student => student.get('score') >= 70);
+
+  // Map over the result to capitalize the first letter of first and last names
+  const formattedStudents = bestStudents.map(student =>
+    student.set('firstName', student.get('firstName').charAt(0).toUpperCase() + student.get('firstName').slice(1))
+      .set('lastName', student.get('lastName').charAt(0).toUpperCase() + student.get('lastName').slice(1))
+  );
+
+  // Convert the Seq back to an object and print to the console
+  console.log(formattedStudents.toJS());
 }
