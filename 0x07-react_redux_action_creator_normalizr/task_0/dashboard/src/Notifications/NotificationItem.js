@@ -1,18 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { StyleSheet, css } from 'aphrodite';
 
 class NotificationItem extends React.Component {
-  handleItemClick = () => {
-    const { markAsRead, id } = this.props;
-    markAsRead(id);
-  };
   render() {
-    const { type, html, value } = this.props;
+    const { type, html, value, id, markAsRead } = this.props;
     return (
       <li
         data-notification-type={type}
         dangerouslySetInnerHTML={html}
         onClick={() => markAsRead(id)}
+        className={css([
+          type === 'default' ? styles.default : styles.urgent,
+          styles.small,
+        ])}
       >
         {value}
       </li>
@@ -35,5 +36,27 @@ NotificationItem.defaultProps = {
   type: 'default',
   markAsRead: () => {},
 };
+
+const styles = StyleSheet.create({
+  urgent: {
+    paddingBottom: '0.3rem',
+    color: '#c7254e',
+    cursor: 'pointer',
+  },
+
+  default: {
+    paddingBottom: '0.3rem',
+    color: 'blue',
+    cursor: 'pointer',
+  },
+
+  small: {
+    '@media (max-width: 600px)': {
+      borderBottom: '1px solid black',
+      boxSizing: 'border-box',
+      padding: '10px 8px',
+    },
+  },
+});
 
 export default NotificationItem;
