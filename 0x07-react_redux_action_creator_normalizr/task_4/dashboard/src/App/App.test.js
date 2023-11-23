@@ -52,3 +52,22 @@ describe('App component', () => {
     expect(wrapper.contains(<Login />)).toBe(false);
   });
 });
+
+describe('App class component', () => {
+  test('should call logOut and show alert when pressing "Control" plus "h" keys', () => {
+    const mockLogOut = jest.fn();
+
+    const { container } = render(<App logOut={mockLogOut} />);
+
+    const keyEvent = new KeyboardEvent('keydown', {
+      key: 'h',
+      ctrlKey: true,
+    });
+
+    document.dispatchEvent(keyEvent);
+
+    expect(mockLogOut).toHaveBeenCalledTimes(1);
+
+    expect(window.alert).toHaveBeenCalledWith('Logging you out');
+  });
+});

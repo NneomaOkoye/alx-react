@@ -1,11 +1,13 @@
 import React from 'react';
 import CourseListRow from './CourseListRow';
-import './CourseList.css';
+import {StyleSheet, css} from 'aphrodite';
+import PropTypes from 'prop-types';
+import { CourseShape } from './CourseShape';
 
-export default function CourseList() {
+const CourseList = ({ listCourses }) => {
   return (
-    <table id='CourseList'>
-      <thead>
+    <table id='CourseList' className={css(styles.CourseList)}>
+      <thead className={css(styles.head)}>
         <CourseListRow textFirstCell='Available courses' isHeader={true} />
         <CourseListRow
           textFirstCell='Course name'
@@ -14,22 +16,37 @@ export default function CourseList() {
         />
       </thead>
       <tbody>
-        <CourseListRow
-          textFirstCell='ES6'
-          textSecondCell='60'
-          isHeader={false}
-        />
-        <CourseListRow
-          textFirstCell='Webpack'
-          textSecondCell='20'
-          isHeader={false}
-        />
-        <CourseListRow
-          textFirstCell='React'
-          textSecondCell='40'
-          isHeader={false}
-        />
+        {listCourses?.length === 0 ? (
+          <CourseListRow textFirstCell={'No course available yet'} />
+        ) : (
+          listCourses?.map(({ id, name, credit }) => (
+            <CourseListRow
+              key={id}
+              textFirstCell={name}
+              textSecondCell={credit}
+            />
+          ))
+        )}
       </tbody>
     </table>
   );
+};
+
+CourseList.propTypes = {
+  listCourses: PropTypes.arrayOf(CourseShape),
+};
+
+const styles = StyleSheet.create({
+CourseList :{
+  border: '1px solid grey',
+  width: '100%',
+  padding: 0,
+},
+head :{
+  textAlign: 'center',
+  borderTop: '1px solid grey',
+  borderBottom: '1px solid grey',
 }
+})
+
+export default CourseList;

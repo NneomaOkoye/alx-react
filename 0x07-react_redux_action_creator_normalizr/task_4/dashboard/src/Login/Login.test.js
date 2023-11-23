@@ -16,3 +16,4 @@ describe('input label', () => {
     expect(wrapper.find('label')).toHaveLength(2);
   });
 });
+
