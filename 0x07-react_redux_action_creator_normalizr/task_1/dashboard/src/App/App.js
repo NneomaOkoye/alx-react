@@ -8,37 +8,69 @@ import PropTypes from 'prop-types';
 import CourseList from '../CourseList/CourseList';
 import BodySectionWithMarginBottom from '../BodySection/BodySectionWithMarginBottom';
 import BodySection from '../BodySection/BodySection';
-import {StyleSheet, css} from 'aphrodite'
+import { StyleSheet, css } from 'aphrodite';
+import { UserContext, logOut, user } from './AppContext';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      listCourses: [
-        {
-          id: 1,
-          name: 'ES6',
-          credit: 60,
-        },
-        {
-          id: 2,
-          name: 'Webpack',
-          credit: 20,
-        },
-        {
-          id: 3,
-          name: 'React',
-          credit: 40,
-        },
-      ],
-
+      displayDrawer: false,
+      user: user,
+      logOut: this.logOut,
       listNotifications: [
         { id: 1, type: 'default', value: 'New course available' },
         { id: 2, type: 'urgent', value: 'New resume available' },
         { id: 3, type: 'default', html: { __html: getLatestNotification() } },
       ],
     };
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleDisplayDrawer = this.handleDisplayDrawer.bind(this);
+    this.handleHideDrawer = this.handleHideDrawer.bind(this);
+    this.logIn = this.logIn.bind(this);
+    this.logOut = this.logOut.bind(this);
+    this.markNotificationAsRead = this.markNotificationAsRead.bind(this);
   }
+
+  markNotificationAsRead(id) {
+    const newNotifications = this.state.listNotifications.filter(
+      (notif) => notif.id !== id
+    );
+    this.setState((state) => {
+      return { ...state, listNotifications: newNotifications };
+    });
+  }
+
+  handleDisplayDrawer() {
+    this.setState((state) => {
+      return { ...state, displayDrawer: true };
+    });
+  }
+
+  handleHideDrawer() {
+    this.setState((state) => {
+      return { ...state, displayDrawer: false };
+    });
+  }
+
+  listCourses = [
+    {
+      id: 1,
+      name: 'ES6',
+      credit: 60,
+    },
+    {
+      id: 2,
+      name: 'Webpack',
+      credit: 20,
+    },
+    {
+      id: 3,
+      name: 'React',
+      credit: 40,
+    },
+  ];
+
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeyDown);
   }
@@ -53,22 +85,41 @@ class App extends React.Component {
       this.props.logOut();
     }
   };
+
+  logOut() {
+    this.setState((state) => {
+      return { ...state, user: user };
+    });
+  }
+
+  logIn(email, password) {
+    this.setState((state) => {
+      return { ...state, user: { email, password, isLoggedIn: true } };
+    });
+  }
   render() {
-    const { listCourses, listNotifications } = this.state;
-    const isLoggedIn = this.props.isLoggedIn;
+    //const isLoggedIn = this.props.isLoggedIn;
     return (
-      <>
-        <Notifications listNotifications={listNotifications} />
+      <UserContext.Provider
+        value={{ user: this.state.user, logOut: this.logOut }}
+      >
+        <Notifications
+          listNotifications={this.state.listNotifications}
+          displayDrawer={this.state.displayDrawer}
+          handleDisplayDrawer={this.handleDisplayDrawer}
+          handleHideDrawer={this.handleHideDrawer}
+          markNotificationAsRead={this.markNotificationAsRead}
+        />
         <div className='App'>
           <Header />
           <div className={css(styles.AppBody)}>
-            {isLoggedIn ? (
+            {this.state.user.isLoggedIn ? (
               <BodySectionWithMarginBottom title='Course list'>
-                <CourseList listCourses={listCourses} />
+                <CourseList listCourses={this.listCourses} />
               </BodySectionWithMarginBottom>
             ) : (
               <BodySectionWithMarginBottom title='Log in to continue'>
-                <Login />
+                <Login logIn={this.logIn} />
               </BodySectionWithMarginBottom>
             )}
 
@@ -81,7 +132,7 @@ class App extends React.Component {
           </div>
           <Footer />
         </div>
-      </>
+      </UserContext.Provider>
     );
   }
 }
@@ -90,18 +141,18 @@ const styles = StyleSheet.create({
   check: {
     margin: 0,
     padding: 0,
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
   },
-  AppBody : {
-  borderTop: '3px solid #c7254e',
-  borderBottom: '3px solid #c7254e',
-  height: '60vh',
-  paddingTop: '4rem',
-  paddingLeft: '3rem',
-  fontWeight: '500',
-  fontSize: '1.125rem'
-},
-})
+  AppBody: {
+    borderTop: '3px solid #c7254e',
+    borderBottom: '3px solid #c7254e',
+    height: '60vh',
+    paddingTop: '4rem',
+    paddingLeft: '3rem',
+    fontWeight: '500',
+    fontSize: '1.125rem',
+  },
+});
 
 App.propTypes = {
   isLoggedIn: PropTypes.bool,
