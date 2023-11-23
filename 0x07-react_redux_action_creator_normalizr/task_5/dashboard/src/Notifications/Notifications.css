@@ -1,9 +1,6 @@
 .Notifications {
   border: 2px dotted var(--red-color);
   padding: 1rem;
-  position: absolute;
-  right: 0;
-  width: 30%;
 }
 
 .close-btn {
@@ -37,8 +34,4 @@
 
 [data-notification-type="urgent"] {
   color: var(--red-color);
-}
-
-.menuItem {
-  text-align: right;
 }

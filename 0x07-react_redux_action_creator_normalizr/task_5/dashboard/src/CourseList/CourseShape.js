@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+mport PropTypes from 'prop-types';
 
 export const CourseShape = PropTypes.shape({
   id: PropTypes.number.isRequired,

@@ -1,4 +1,5 @@
-me": "dashboard",
+{
+  "name": "dashboard",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -30,7 +31,9 @@ me": "dashboard",
   "dependencies": {
     "@babel/runtime": "^7.18.6",
     "@zarconontol/enzyme-adapter-react-18": "^0.7.3",
+    "aphrodite": "^2.4.0",
     "inline-source-map": "^0.6.2",
+    "normalizr": "^3.6.2",
     "prop-types": "^15.8.1"
   }
 }
