@@ -1,110 +1,160 @@
-import React from 'react';
-import App from './App';
-import { shallow, mount } from 'enzyme';
-import Notifications from '../Notifications/Notifications';
-import Header from '../Header/Header';
-import Login from '../Login/Login';
-import Footer from '../Footer/Footer';
-import CourseList from '../CourseList/CourseList';
-import { render, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import React from "react";
+import Header from "../Header/Header";
+import Footer from "../Footer/Footer";
+import Login from "../Login/Login";
+import CourseList from "../CourseList/CourseList";
+import Notifications from "../Notifications/Notifications";
+import BodySectionWithMarginBottom from "../BodySection/BodySectionWithMarginBottom";
+import BodySection from "../BodySection/BodySection";
+import { StyleSheet, css } from "aphrodite";
+import PropTypes from "prop-types";
+import { getLatestNotification } from "../utils/utils";
+import { AppContext, user } from './AppContext';
 
+class App extends React.Component {
+  constructor(props) {
+    super(props);
 
+    this.state = {
+      displayDrawer: false,
+      user: user,
+      logOut: this.logOut,
+      listNotifications: [
+        { id: 1, type: "default", value: "New course available" },
+        { id: 2, type: "urgent", value: "New resume available" },
+        { id: 3, type: "urgent", html: getLatestNotification() },
+      ],
+    };
 
-describe('<App />', () => {
-    it('App renders without crashing', () => {
-        shallow(<App />)
+    this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.handleDisplayDrawer = this.handleDisplayDrawer.bind(this);
+    this.handleHideDrawer = this.handleHideDrawer.bind(this);
+    this.logIn = this.logIn.bind(this);
+    this.logOut = this.logOut.bind(this);
+    this.markNotificationAsRead = this.markNotificationAsRead.bind(this);
+  }
+
+  listCourses = [
+    { id: 1, name: "ES6", credit: 60 },
+    { id: 2, name: "Webpack", credit: 20 },
+    { id: 3, name: "React", credit: 40 },
+  ];
+
+  
+
+  handleKeyPress(e) {
+    if (e.ctrlKey && e.key === "h") {
+      e.preventDefault();
+      alert("Logging you out");
+      this.props.logOut();
+    }
+  }
+
+  handleDisplayDrawer() {
+    this.setState({
+      displayDrawer: true,
     });
+  }
 
-    it('should contain the Notifications component', () => {
-        const wrapper = shallow(<App />);
-        expect(wrapper.find(Notifications)).toHaveLength(1);
-
+  handleHideDrawer() {
+    this.setState({
+      displayDrawer: false,
     })
+  }
 
-    it('should contain the Header componenr', () => {
-        const wrapper = shallow(<App />);
-        expect(wrapper.find(Header)).toHaveLength(1);
+  markNotificationAsRead(id) {
+    const newList = this.listNotifications.filter((notification) => notification.id !== id);
+    this.setState({ listNotifications: newList });
+  }
 
-    })
+  componentDidMount() {
+    document.addEventListener("keydown", this.handleKeyPress);
+  }
 
-    it('should contain the Login component', () => {
-        const wrapper = shallow(<App />);
-        expect(wrapper.find(Login)).toHaveLength(1);
+  componentWillUnmount() {
+    document.removeEventListener("keydown", this.handleKeyPress);
+  }
 
+  logIn(email, password) {
+    this.setState({
+      user: {
+        email,
+        password,
+        isLoggedIn: true,
+      },
     });
+  }
 
-    it('should contain the Footer component', () => {
-        const wrapper = shallow(<App />);
-        expect(wrapper.find(Footer)).toHaveLength(1);
+  logOut() {
+    this.setState({
+      user: user,
     });
+  }
 
-    it('does not render courselist if logged out', () => {
-        const component = shallow(<App />);
-        component.setProps({ isLoggedIn: false });
-        expect(component.contains(<CourseList />)).toBe(true);
-    });
-    it('renders courselist if logged in', () => {
-        const component = shallow(<App isLoggedIn={true} />);
-        expect(component.contains(<CourseList />)).toBe(true);
-        expect(component.contains(<Login />)).toBe(false);
-    });
-});
+  render() {
+    return (
+      <AppContext.Provider
+        value={{
+          user: this.state.user,
+          logout: this.state.logOut,
+        }}
+      >
+        <React.Fragment>
+          <div className={css(styles.app)}>
+            <div className={css(styles.headingSection)}>
+              <Notifications
+                markNotificationAsRead={this.markNotificationAsRead}
+                listNotifications={this.state.listNotifications}
+                displayDrawer={this.state.displayDrawer}
+                handleDisplayDrawer={this.handleDisplayDrawer}
+                handleHideDrawer={this.handleHideDrawer}
+              />
+              <Header />
+            </div>
+            {this.state.user.isLoggedIn ? (
+              <BodySectionWithMarginBottom title="Course list">
+                <CourseList listCourses={this.listCourses} />
+              </BodySectionWithMarginBottom>
+            ) : (
+              <BodySectionWithMarginBottom title="Log in to continue">
+                <Login logIn={this.logIn} />
+              </BodySectionWithMarginBottom>
+            )}
+            <BodySection title="News from the school">
+              <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis at tempora odio, necessitatibus repudiandae reiciendis cum nemo sed asperiores ut molestiae eaque aliquam illo ipsa
+                iste vero dolor voluptates.
+              </p>
+            </BodySection>
+            <Footer />
+          </div>
+        </React.Fragment>
+      </AppContext.Provider>
+    );
+  }
 
 
+}
 
-describe('App component', () => {
-    test('should call logOut and show alert when pressing "Control" and "h" keys', () => {
-      // Mock the logOut function
-      const mockLogOut = jest.fn();
-  
-      // Render the App component with the mocked logOut function
-      const { container } = render(<App logOut={mockLogOut} />);
-  
-      // Create a keyboard event to simulate pressing "Control" and "h" keys
-      const keyEvent = new KeyboardEvent('keydown', {
-        key: 'h',
-        ctrlKey: true,
-      });
-  
-      // Dispatch the keyboard event on the document
-      document.dispatchEvent(keyEvent);
-  
-      // Expect the logOut function to have been called
-      expect(mockLogOut).toHaveBeenCalledTimes(1);
-  
-      // Expect the alert to have been displayed with the correct message
-      expect(window.alert).toHaveBeenCalledWith('Logging you out');
-    });
-  });
+const styles = StyleSheet.create({
+  app: {
+    height: '100vh',
+    maxWidth: '100vw',
+    position: 'relative',
+    fontFamily: 'Arial, Helvetica, sans-serif',
+  },
+})
 
-  describe('DrawerComponent', () => {
-    it('should have default state displayDrawer set to false', () => {
-      const wrapper = mount(<DrawerComponent />);
-      expect(wrapper.state('displayDrawer')).toBe(false);
-    });
-  
-    it('should update state displayDrawer to true after calling handleDisplayDrawer', () => {
-      const wrapper = mount(<DrawerComponent />);
-      const instance = wrapper.instance();
-      const handleDisplayDrawerSpy = jest.spyOn(instance, 'handleDisplayDrawer');
-  
-      instance.handleDisplayDrawer();
-      wrapper.update();
-  
-      expect(handleDisplayDrawerSpy).toHaveBeenCalled();
-      expect(wrapper.state('displayDrawer')).toBe(true);
-    });
-  
-    it('should update state displayDrawer to false after calling handleHideDrawer', () => {
-      const wrapper = mount(<DrawerComponent />);
-      const instance = wrapper.instance();
-      const handleHideDrawerSpy = jest.spyOn(instance, 'handleHideDrawer');
-  
-      instance.handleHideDrawer();
-      wrapper.update();
-  
-      expect(handleHideDrawerSpy).toHaveBeenCalled();
-      expect(wrapper.state('displayDrawer')).toBe(false);
-    });
-  });
+App.defaultProps = {
+  isLoggedIn: false,
+  logOut: () => {
+    return;
+  },
+};
+
+App.propTypes = {
+  isLoggedIn: PropTypes.bool,
+  logOut: PropTypes.func,
+};
+
+export default App;
