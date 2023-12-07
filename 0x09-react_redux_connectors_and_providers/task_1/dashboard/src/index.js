@@ -1,16 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-//import './index.css';
+import { createStore } from 'redux';
 import App from './/App/App';
 import reportWebVitals from './reportWebVitals';
-
+import { Map } from 'immutable';
+import uiReducer, { initialState } from './reducers/uiReducer';
+const store = createStore(uiReducer, Map(initialState));
+import { Provider } from 'react-redux';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App /> 
-    
-    
+    <Provider store={store}>
+      <App />
+    </Provider>
   </React.StrictMode>
 );
 
