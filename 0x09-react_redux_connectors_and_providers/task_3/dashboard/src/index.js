@@ -1,12 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import App from './/App/App';
 import reportWebVitals from './reportWebVitals';
 import { Map } from 'immutable';
 import uiReducer, { initialState } from './reducers/uiReducer';
-const store = createStore(uiReducer, Map(initialState));
 import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+
+const devtools = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const store = createStore(
+  uiReducer,
+  Map(initialState),
+  devtools(applyMiddleware(thunk))
+);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
